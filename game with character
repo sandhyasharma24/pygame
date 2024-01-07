@@ -1,0 +1,152 @@
+import pygame
+# to install pygame type" pip install pygame"
+# to check if pygame is installed type "pip show pygame"
+# pygame is a third party module it is use to make games using python
+pygame.init()
+# to initialize pygame
+
+win = pygame.display.set_mode([500, 480])
+# to create a window
+
+pygame.display.set_caption("First Game")
+# to give proper name to window +
+walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'), pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'), pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png')]
+walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'), pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'), pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
+bg = pygame.image.load('bg.jpg')
+char = pygame.image.load('standing.png')
+clock = pygame.time.Clock()
+class player(object):
+    def __init__(self,x,y,height,width):
+        self.x=x
+        self.y=y
+        self.height=height
+        self.width=width
+        self.vel=5
+        self.isJump=False
+        self.jumpCount=10
+        self.left =False
+        self.right=False
+        self.walkcount=0
+        # this is all in one class for all the characteristic given below to make program below less messy
+         
+# x= 50
+# y =425
+# # coordinates are the from top left corner
+# vel= 5 
+# height = 64
+# width =64
+# # attributes of character
+# isJump = False
+# # to indicate whether our character is jumping or not
+# jumpCount = 10
+# # to track the progress of the jump
+# # when space key will be pressed the isJump will be set to true and jumpcount will start decrementing
+# left =False
+# right =False
+# walkcount =0
+# to keep track of how many times we have moved
+    def draw(self, win):
+        if self.walkcount + 1 >= 27:
+            self.walkcount = 0
+
+        if self.left:
+            win.blit(walkLeft[self.walkcount//3], (self.x,self.y))
+            self.walkcount += 1
+        elif self.right:
+            win.blit(walkRight[self.walkcount//3], (self.x,self.y))
+            self.walkcount +=1
+        else:
+            win.blit(char, (self.x,self.y))
+def redrawgamewindow():
+    # global walkcount
+    win.blit(bg, (0,0))
+    # pygame.draw.rect(win,(255,0,0),(x,y,width,height))
+    # if walkcount + 1 >= 27:
+    #     walkcount =0
+    # if left:
+    #     win.blit(walkLeft[walkcount//3],(x,y))
+    #     walkcount +=1
+    # elif right:
+    #     win.blit(walkRight[walkcount//3],(x,y))
+    #     walkcount +=1
+    # else:
+    #     win.blit(char,(x,y))
+    # instead of above messy code we will create another class
+    nithin.draw(win)
+    pygame.display.update()
+# main loop
+nithin = player(200,410,64,64) 
+running = True
+while running:
+    clock.tick(27)#to set fps
+    # pygame.time.delay(50) #to set motion time for character
+# main loop to check collisions or if you hit something
+    for event in pygame.event.get():
+    # to check for event(events are everything we do on console example moving mouse)
+        if event.type == pygame.QUIT:
+        # providing exit button on window 
+            running = False
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and nithin.x >nithin.vel:
+        nithin.x -= nithin.vel
+        nithin.left =True
+        nithin.right =False
+         #to move left we will substract from the x axis
+    elif keys[pygame.K_RIGHT] and nithin.x < 500 -nithin.width -nithin.vel:
+        # this and condition will prevent character from moving off screen
+        nithin.x += nithin.vel #to move right we will add
+        nithin.right= True
+        nithin.left =False
+    else:
+        nithin.right =False
+        nithin.left= False
+        nithin.walkcount = 0
+    if not(nithin.isJump):
+        # this condition will help us in moving character but right now it will only show a train of red rect moving along the screen
+            # if keys[pygame.K_DOWN] and y < 500-height -vel:  
+            #      y += vel# to move down we will use y-axis
+            # if keys[pygame.K_UP] and y > vel: 
+            #      y -= vel # to move up we will subtract from y-axis
+            #      y-= vel
+            if keys[pygame.K_SPACE]:
+                nithin.isJump =True
+                nithin.right =False
+                nithin.left =False
+                nithin.walkcount =0
+                # making it true so that next if statement doesn't execute
+    else:
+        if nithin.jumpCount >= -10:
+            # here we make our image go up while it is in mid air
+            # we use quadratic equation to make it go up and down
+            # we use jumpcount to track the progress of jump
+            # The jump is controlled by the quadratic function y -= (jumpCount **2) *0.5*neg. 
+            # The function uses jumpCount as the independent variable.
+            neg = 1
+            # neg is used to determine the direction of the jump. If jumpCount is positive, neg is 1, meaning the jump is in the upward direction.
+            #If jumpCount is negative, neg is -1, meaning the jump is in the downward direction
+            if nithin.jumpCount < 0:
+                 neg = -1
+            nithin.y -= (nithin.jumpCount **2) *0.5*neg
+            nithin.jumpCount -=1
+            
+        else:
+            nithin.isJump = False
+            nithin.jumpCount = 10
+            
+        # When jumpCount reaches -10, the character has completed the jump, and isJump is set to False, allowing the character to fall again. The jumpCount is then reset to 10.                #   
+        # The quadratic function allows the character to move up and down in a parabolic motion, simulating gravity and giving the appearance of a jump
+    # when user wants to jump
+# this conditions will help us in moving character but right now it will only show a train of red rect moving along the screen 
+# but we want only out shape to move so to fill its train along with backgroung we will use
+    # win.fill((0,0,0))
+    # pygame.draw.rect(win,(255,0,0),(x,y,width,height))
+    # # to draw shapes on window
+    # # we put win in parameter to draw shapes on the windows suface
+    # # given 255,0,0 is color code provide to shape
+    # # x,y are the coordinates of the shape
+    # # width and height are the attributes of shape
+    # pygame.display.update()
+    # to update the window with characte or else it wonts show anyhthing
+    redrawgamewindow()
+
+pygame.quit()
